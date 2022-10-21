@@ -44,7 +44,7 @@ class Company {
     return company;
   }
 
-  
+
   /** Finds all companies. Passing in argument {searchFilters}
    *   *
    * searchFilters (all optional):
@@ -115,6 +115,17 @@ class Company {
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+    
+    //adding jobs property to company response
+    const jobsRes = await db.query(
+      `SELECT id, title, salary, equity
+           FROM jobs
+           WHERE company_handle = $1
+           ORDER BY id`,
+      [handle],
+    );
+
+    company.jobs = jobsRes.rows;
 
     return company;
   }
